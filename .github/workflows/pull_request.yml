@@ -1,0 +1,62 @@
+name: Auto Pull Request from DevOpsProject Repo
+
+on:
+  schedule:
+    # Runs every 5 hours
+    - cron: '0 */5 * * *'
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  create_pr:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the SampleProjects repository (this repository), including submodules
+    - name: Checkout Target Repo (SampleProjects)
+      uses: actions/checkout@v2
+      with:
+        persist-credentials: false # Disable so we can switch to the source repo
+        fetch-depth: 0 # Fetch all history so we can create proper pull request
+        submodules: true # Checkout submodules
+
+    # Step 2: Initialize and update submodules
+    - name: Initialize and Update Submodules
+      run: |
+        git submodule init
+        git submodule update --remote
+
+    # Step 3: Fetch DevOpsProject repository and copy Clinic-token-system folder
+    - name: Fetch DevOpsProject Repo and Sync Folder
+      run: |
+        git remote add source https://github.com/ashiksp1994/DevOpsProject.git
+        git fetch source
+        git checkout source/main -- Clinic-token-system
+
+        # Sync the Clinic-token-system folder from DevOpsProject to SampleProjects
+        rsync -av --progress Clinic-token-system/ Clinic-token-system/
+
+    # Step 4: Commit the changes if there are any
+    - name: Commit Changes
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add .
+        git commit -m "Sync Clinic-token-system folder from DevOpsProject" || echo "No changes to commit"
+
+    # Step 5: Push changes to a new branch in SampleProjects
+    - name: Push Changes to Target Repo
+      env:
+        GH_PAT: ${{ secrets.GH_PAT }}
+      run: |
+        git push origin HEAD:sync-clinic-token-branch || echo "No changes to push"
+
+    # Step 6: Create a pull request
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v3
+      with:
+        token: ${{ secrets.GH_PAT }}
+        commit-message: "Sync Clinic-token-system folder from DevOpsProject"
+        title: "Pull Request: Sync Clinic-token-system folder from DevOpsProject"
+        body: "This pull request syncs the Clinic-token-system folder from the DevOpsProject repository."
+        branch: "sync-clinic-token-branch"
+        base: "main"
