@@ -59,7 +59,7 @@ jobs:
 
         # Sync the entire DevOpsProject contents into the Clinic-token-system folder in SampleProjects
         mkdir -p Clinic-token-system
-        rsync -av --delete --progress ./ Clinic-token-system/ --exclude Clinic-token-system/ # Sync files into folder and delete files not present in DevOpsProject
+        rsync -av --delete --progress ./ Clinic-token-system/ # Sync files into folder and delete files not present in DevOpsProject
 
     # Step 6: Commit the changes if there are any
     - name: Commit Changes
