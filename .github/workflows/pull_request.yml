@@ -2,8 +2,8 @@ name: Auto Sync DevOpsProject into Clinic-token-system Folder
 
 on:
   schedule:
-    # Runs every 5 hours
-    - cron: '0 */5 * * *'
+    # Runs every midnight(00:00) hours
+    - cron: '0 0 * * *'
   workflow_dispatch: # Allows manual trigger
 
 jobs:
