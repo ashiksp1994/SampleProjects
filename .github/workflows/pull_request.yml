@@ -33,12 +33,12 @@ jobs:
         git checkout source/main -- .
 
         # Sync the entire DevOpsProject to Clinic-token-system folder in SampleProjects
-        rsync -av --progress . /Clinic-token-system/
+        rsync -av --progress . Clinic-token-system/
 
     # Step 4: Commit the changes if there are any
     - name: Commit Changes
       run: |
-        git add /Clinic-token-system/
+        git add Clinic-token-system/
         if git diff-index --quiet HEAD; then
           echo "No changes to commit"
         else
