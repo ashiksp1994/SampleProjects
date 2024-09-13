@@ -15,16 +15,16 @@ jobs:
     - name: Checkout Target Repo (SampleProjects)
       uses: actions/checkout@v2
       with:
-        persist-credentials: false # Disable so we can switch to the source repo
-        fetch-depth: 0 # Fetch full history for better commit handling
-        ref: main # Checkout the main branch
+        persist-credentials: false
+        fetch-depth: 0
+        ref: main
 
-    # Step 2: Ensure submodule is removed properly (if exists)
-    - name: Remove Submodule Configuration
+    # Step 2: Check if Clinic-token-system is a submodule and remove it
+    - name: Remove Submodule Configuration (if exists)
       run: |
-        if git ls-files --stage | grep 160000; then
-          echo "Submodule detected. Removing submodule references."
-          git submodule deinit -f --all || true
+        if git config --file .gitmodules --get-regexp path | grep 'Clinic-token-system'; then
+          echo "Submodule detected. Removing submodule."
+          git submodule deinit -f Clinic-token-system || true
           git rm -f Clinic-token-system || true
           rm -rf .git/modules/Clinic-token-system || true
           rm -rf Clinic-token-system || true
@@ -38,30 +38,32 @@ jobs:
           echo "No submodule detected."
         fi
 
-    # Step 3: Pull latest changes from main branch
+    # Step 3: Pull the latest changes from the main branch of SampleProjects
     - name: Pull Latest Changes from Main Branch
       run: |
         git pull origin main
 
-    # Step 4: Authenticate using the PAT to allow fetching from DevOpsProject
+    # Step 4: Authenticate using the PAT for fetching from DevOpsProject
     - name: Set up Authentication
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git remote add source https://${{ secrets.GH_PAT }}@github.com/ashiksp1994/DevOpsProject.git
 
-    # Step 5: Fetch DevOpsProject repository and sync files into Clinic-token-system folder
+    # Step 5: Fetch and sync DevOpsProject to the Clinic-token-system folder
     - name: Fetch and Sync DevOpsProject Repo
       run: |
-        # Fetch all files from DevOpsProject repository
+        # Fetch the latest changes from DevOpsProject
         git fetch source
         git checkout source/main -- .
 
-        # Sync the entire DevOpsProject contents into the Clinic-token-system folder in SampleProjects
+        # Ensure the Clinic-token-system folder exists
         mkdir -p Clinic-token-system
-        rsync -av --delete --progress ./ Clinic-token-system/ # Sync files into folder and delete files not present in DevOpsProject
 
-    # Step 6: Commit the changes if there are any
+        # Rsync the contents of DevOpsProject to Clinic-token-system folder in SampleProjects
+        rsync -av --delete --progress --exclude ".git" ./ Clinic-token-system/
+
+    # Step 6: Commit any changes if found
     - name: Commit Changes
       run: |
         git add Clinic-token-system/
@@ -71,9 +73,9 @@ jobs:
           git commit -m "Sync files from DevOpsProject to Clinic-token-system"
         fi
 
-    # Step 7: Push changes to the main branch of SampleProjects
+    # Step 7: Push changes to the main branch
     - name: Push Changes to Main Branch
       env:
-        GH_PAT: ${{ secrets.GH_PAT }} # Use PAT for pushing
+        GH_PAT: ${{ secrets.GH_PAT }} # Use PAT for authentication
       run: |
         git push https://${{ secrets.GH_PAT }}@github.com/ashiksp1994/SampleProjects.git main || echo "No changes to push"
