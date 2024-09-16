@@ -1,0 +1,3 @@
+[submodule "physiotherapy-clinic"]
+	path = physiotherapy-clinic
+	url = https://github.com/ashiksp1994/physiotherapy-clinic.git
