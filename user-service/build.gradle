@@ -1,9 +1,9 @@
 plugins {
     id 'java'
     id 'war'
-    id 'org.springframework.boot' version '3.3.2'
+    id 'org.springframework.boot' version '3.3.3'
     id 'io.spring.dependency-management' version '1.1.6'
-    id 'com.github.ben-manes.versions' version '0.44.0' // Add the Gradle Versions Plugin
+    id 'com.github.ben-manes.versions' version '0.51.0' // Add the Gradle Versions Plugin
 }
 
 group = 'com.physiotherapy'
@@ -36,7 +36,7 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
     // JWT for authentication
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'io.jsonwebtoken:jjwt:0.12.6'
 
     // Google Cloud SQL Socket Factory (latest version)
     implementation 'com.google.cloud.sql:postgres-socket-factory:1.9.0'
@@ -58,7 +58,7 @@ dependencies {
     testImplementation 'com.h2database:h2' // H2 Database for unit tests
 
     // Mockito for unit testing (Optional)
-    testImplementation 'org.mockito:mockito-core:3.9.0'
+    testImplementation 'org.mockito:mockito-core:5.13.0'
 }
 
 tasks.withType(Test) {
@@ -66,9 +66,22 @@ tasks.withType(Test) {
     // Remove 'enabled = false' to enable tests
 }
 
+test {
+    reports {
+        junitXml {
+            enabled = true // Enable JUnit XML reports
+            destination = file("$buildDir/test-results") // Optional: Set the destination for test results
+        }
+        html {
+            enabled = true // Enable HTML reports
+            destination = file("$buildDir/reports/tests") // Optional: Set the destination for HTML reports
+        }
+    }
+}
+
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2022.0.4"
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2023.0.3"
     }
 }
 

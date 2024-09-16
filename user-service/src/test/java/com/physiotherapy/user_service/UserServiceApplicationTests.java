@@ -10,6 +10,7 @@ class UserServiceApplicationTests {
 
 	@Test
 	void contextLoads() {
+		
 		// Basic context loading test to ensure application starts up for testing
 	}
 }

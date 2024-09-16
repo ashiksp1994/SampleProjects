@@ -82,7 +82,7 @@ pipeline {
                     for (service in services) {
                         dir("backend/${service}") {
                             echo "Running integration tests for ${service}"
-                            sh './gradlew --scan --no-daemon --console=plain -Dscan.termsOfService.accept=true'
+                            sh './gradlew clean build test --scan --no-daemon --console=plain -Dscan.termsOfService.accept=true'
                         }
                     }
                 }
@@ -249,12 +249,13 @@ pipeline {
 
     post {
         always {
-            // Clean workspace always, even if there are errors
-            cleanWs() 
-            
+                        
             // Archive test reports (HTML and JUnit results)
             archiveArtifacts artifacts: '**/build/reports/tests/test/index.html', allowEmptyArchive: true
             junit '**/build/test-results/test/TEST-*.xml'
+
+            // Clean workspace always, even if there are errors
+            cleanWs()
         }
         success {
             echo 'Build and deployment successful!'

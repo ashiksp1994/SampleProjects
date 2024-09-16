@@ -1,0 +1,24 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+#'appointment-service', 'token-service', 'user-service
+version: 2
+updates:
+    # Update Gradle dependencies for service1
+  - package-ecosystem: "gradle"
+    directory: "/appointment-service"
+    schedule:
+      interval: "weekly"
+
+  # Update Gradle dependencies for service2
+  - package-ecosystem: "gradle"
+    directory: "/token-service"
+    schedule:
+      interval: "weekly"
+
+  # Update Gradle dependencies for service3
+  - package-ecosystem: "gradle"
+    directory: "/user-service"
+    schedule:
+      interval: "weekly"
