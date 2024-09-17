@@ -30,10 +30,10 @@ pipeline {
                 stage('Checkout Backend') {
                     steps {
                         script {
-                             dir('backend') {
-                           git branch: 'main', credentialsId: "github-pat-credentials", url: 'https://github.com/ashiksp1994/DevOpsProject.git'
+                        dir('backend') {
+                        git branch: 'main', credentialsId: "github-pat-credentials", url: 'https://github.com/ashiksp1994/DevOpsProject.git'
                            //sh 'ls -la'
-                             }
+                            }
                         }
                     }
                 }
@@ -53,7 +53,6 @@ pipeline {
            // parallel {
         stage('Backend Tests') {
             steps {
-              
                     script {
                         def services = ['appointment-service', 'token-service', 'user-service']
                         for (service in services) {
@@ -72,7 +71,6 @@ pipeline {
                             }
                         }
                     }
-               
             }
         }
         stage('Run Integration Tests for Backend') {
@@ -251,8 +249,8 @@ pipeline {
         always {
                         
             // Archive test reports (HTML and JUnit results)
-            archiveArtifacts artifacts: '**/build/reports/tests/test/index.html', allowEmptyArchive: true
-            junit '**/build/test-results/test/TEST-*.xml'
+            //archiveArtifacts artifacts: '**/build/reports/tests/test/index.html', allowEmptyArchive: true
+            //junit '**/build/test-results/test/TEST-*.xml'
 
             // Clean workspace always, even if there are errors
             cleanWs()

@@ -3,7 +3,8 @@ plugins {
     id 'war'
     id 'org.springframework.boot' version '3.3.3'
     id 'io.spring.dependency-management' version '1.1.6'
-    id 'com.github.ben-manes.versions' version '0.51.0' // Add the Gradle Versions Plugin
+    id 'com.github.ben-manes.versions' version '0.51.0'
+    id 'jvm-test-suite' // Add the jvm-test-suite plugin for managing tests
 }
 
 group = 'com.physiotherapy'
@@ -19,6 +20,9 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    
+    integrationTestImplementation.extendsFrom(testImplementation)
+    integrationTestRuntimeOnly.extendsFrom(testRuntimeOnly)
 }
 
 repositories {
@@ -31,12 +35,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    
-    // Eureka client for service discovery
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'org.springframework.boot:spring-boot-starter-logging'
 
-    // JWT for authentication
-    implementation 'io.jsonwebtoken:jjwt:0.12.6'
+    // JWT for authentication (latest stable version)
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6' // For JSON parsing if required
 
     // Google Cloud SQL Socket Factory (latest version)
     implementation 'com.google.cloud.sql:postgres-socket-factory:1.9.0'
@@ -44,37 +48,74 @@ dependencies {
     // PostgreSQL driver (updated version)
     implementation 'org.postgresql:postgresql:42.3.1'
 
-    // Lombok (compile-time annotations to reduce boilerplate code)
+    // Lombok (to reduce boilerplate code)
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    testCompileOnly 'org.projectlombok:lombok'
-    testAnnotationProcessor 'org.projectlombok:lombok'
 
     // Servlet API
     compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
 
-    // Spring Boot Test dependencies for integration testing
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'com.h2database:h2' // H2 Database for unit tests
-
-    // Mockito for unit testing (Optional)
+    // Spring Boot Test dependencies for unit tests
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine' // Ensure JUnit 5 is used
+    }
+    testImplementation 'com.h2database:h2'
     testImplementation 'org.mockito:mockito-core:5.13.0'
+
+    // Dependencies for integration tests
+    integrationTestImplementation 'org.testcontainers:junit-jupiter'
+    integrationTestImplementation 'org.testcontainers:postgresql'
 }
 
-tasks.withType(Test) {
-    useJUnitPlatform()
-    // Remove 'enabled = false' to enable tests
-}
+testing {
+    suites {
+        // Unit test suite
+        test {
+            useJUnitJupiter()
 
-test {
-    reports {
-        junitXml {
-            enabled = true // Enable JUnit XML reports
-            destination = file("$buildDir/test-results") // Optional: Set the destination for test results
+            dependencies {
+                implementation 'org.springframework.boot:spring-boot-starter-test'
+                implementation 'com.h2database:h2'
+                implementation 'org.mockito:mockito-core:5.13.0'
+            }
+
+            targets {
+                all {
+                    tasks.named('test') {
+                        // Use 'test' profile for unit tests
+                        systemProperty 'spring.profiles.active', 'test'
+                    }
+                }
+            }
         }
-        html {
-            enabled = true // Enable HTML reports
-            destination = file("$buildDir/reports/tests") // Optional: Set the destination for HTML reports
+
+        // Integration test suite
+        register('integrationTest', JvmTestSuite) {
+            useJUnitJupiter()
+
+            dependencies {
+                implementation 'org.springframework.boot:spring-boot-starter-test'
+                implementation 'org.testcontainers:junit-jupiter'
+                implementation 'org.testcontainers:postgresql'
+            }
+
+            sources {
+                java {
+                    setSrcDirs(['src/integrationTest/java']) // Use the integrationTest directory for integration tests
+                }
+                resources {
+                    setSrcDirs(['src/integrationTest/resources']) // Resources for integration tests
+                }
+            }
+
+            targets {
+                all {
+                    tasks.named('integrationTest') {
+                        // Use 'integration' profile for integration tests
+                        systemProperty 'spring.profiles.active', 'integration'
+                    }
+                }
+            }
         }
     }
 }
@@ -91,4 +132,21 @@ sourceSets {
             srcDirs = ['src/main/java']
         }
     }
+    integrationTest {
+        java {
+            srcDirs = ['src/integrationTest/java'] // Separate integration test source set
+        }
+        resources {
+            srcDirs = ['src/integrationTest/resources'] // Separate integration test resources
+        }
+        // Include main source set in integration test classpath
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+
+// No need to define an extra integrationTest task, handled by testing.suites
+
+tasks.check {
+    dependsOn(tasks.named('integrationTest'))
 }

@@ -12,8 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.physiotherapy.userservice.UserServiceApplication;
 
 @SpringBootTest(classes = UserServiceApplication.class) // Specify your main application class
-@ActiveProfiles("test")
-public class ProfileTest {
+@ActiveProfiles("integration")
+public class ProfileIntegrationTest  {
 
     @Autowired
     private Environment environment;
@@ -25,7 +25,7 @@ public class ProfileTest {
             System.out.println("Active Profile: " + profile);
         }
         // Use the updated method to check if the "test" profile is active
-        assertTrue(environment.acceptsProfiles(Profiles.of("test")), "Test profile should be active");
+        assertTrue(environment.acceptsProfiles(Profiles.of("integration")), "Test profile should be active");
     }
 }
 
