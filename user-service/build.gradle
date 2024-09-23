@@ -43,10 +43,10 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6' // For JSON parsing if required
 
     // Google Cloud SQL Socket Factory (latest version)
-    implementation 'com.google.cloud.sql:postgres-socket-factory:1.20.1'
+    implementation 'com.google.cloud.sql:postgres-socket-factory:1.9.0'
 
     // PostgreSQL driver (updated version)
-    implementation 'org.postgresql:postgresql:42.7.4'
+    implementation 'org.postgresql:postgresql:42.3.1'
 
     // Lombok (to reduce boilerplate code)
     compileOnly 'org.projectlombok:lombok'
