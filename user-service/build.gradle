@@ -46,7 +46,7 @@ dependencies {
     implementation 'com.google.cloud.sql:postgres-socket-factory:1.9.0'
 
     // PostgreSQL driver (updated version)
-    implementation 'org.postgresql:postgresql:42.3.1'
+    implementation 'org.postgresql:postgresql:42.7.4'
 
     // Lombok (to reduce boilerplate code)
     compileOnly 'org.projectlombok:lombok'
