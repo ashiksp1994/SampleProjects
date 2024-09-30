@@ -60,7 +60,7 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine' // Ensure JUnit 5 is used
     }
     testImplementation 'com.h2database:h2'
-    testImplementation 'org.mockito:mockito-core:5.13.0'
+    testImplementation 'org.mockito:mockito-core:5.14.1'
 
     // Dependencies for integration tests
     integrationTestImplementation 'org.testcontainers:junit-jupiter'
@@ -76,7 +76,7 @@ testing {
             dependencies {
                 implementation 'org.springframework.boot:spring-boot-starter-test'
                 implementation 'com.h2database:h2'
-                implementation 'org.mockito:mockito-core:5.13.0'
+                implementation 'org.mockito:mockito-core:5.14.1'
             }
 
             targets {
