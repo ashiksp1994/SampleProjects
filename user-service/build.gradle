@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'war'
-    id 'org.springframework.boot' version '3.3.3'
+    id 'org.springframework.boot' version '3.3.4'
     id 'io.spring.dependency-management' version '1.1.6'
     id 'com.github.ben-manes.versions' version '0.51.0'
     id 'jvm-test-suite' // Add the jvm-test-suite plugin for managing tests
@@ -43,10 +43,10 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6' // For JSON parsing if required
 
     // Google Cloud SQL Socket Factory (latest version)
-    implementation 'com.google.cloud.sql:postgres-socket-factory:1.9.0'
+    implementation 'com.google.cloud.sql:postgres-socket-factory:1.20.1'
 
     // PostgreSQL driver (updated version)
-    implementation 'org.postgresql:postgresql:42.3.1'
+    implementation 'org.postgresql:postgresql:42.7.4'
 
     // Lombok (to reduce boilerplate code)
     compileOnly 'org.projectlombok:lombok'
@@ -60,7 +60,7 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine' // Ensure JUnit 5 is used
     }
     testImplementation 'com.h2database:h2'
-    testImplementation 'org.mockito:mockito-core:5.13.0'
+    testImplementation 'org.mockito:mockito-core:5.14.1'
 
     // Dependencies for integration tests
     integrationTestImplementation 'org.testcontainers:junit-jupiter'
@@ -76,7 +76,7 @@ testing {
             dependencies {
                 implementation 'org.springframework.boot:spring-boot-starter-test'
                 implementation 'com.h2database:h2'
-                implementation 'org.mockito:mockito-core:5.13.0'
+                implementation 'org.mockito:mockito-core:5.14.1'
             }
 
             targets {

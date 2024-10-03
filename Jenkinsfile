@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        GCR_PROJECT = 'physiotherapy-clinic-431211'
+        GCR_PROJECT = 'physiotherapy-clinic-431212'
         GCP_KEYFILE = credentials('gcr-service-account')
         GCP_CLUSTERNAME = "autopilot-cluster-1"
         GCP_CLUSTERZONE = "europe-central2"
